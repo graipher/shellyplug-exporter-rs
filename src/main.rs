@@ -118,12 +118,24 @@ async fn main() {
     .unwrap();
     let process_start_time =
         register_gauge!("process_start_time_seconds", "Start time of the process").unwrap();
-
     let mut now = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()
         .as_secs();
     process_start_time.set(now as f64);
+
+    let compile_datetime = compile_time::datetime_str!();
+    let rustc_version = compile_time::rustc_version_str!();
+    let rust_info = register_gauge_vec!(
+        "rust_info",
+        "Info about the Rust version",
+        &["rustc_version", "compile_time"]
+    )
+    .unwrap();
+    rust_info
+        .get_metric_with_label_values(&[rustc_version, compile_datetime])
+        .unwrap()
+        .set(1.);
 
     loop {
         match get_data(&client, &url).await {
