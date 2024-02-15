@@ -15,9 +15,6 @@ docker build -t shellyplug-exporter .
 docker run --it -rm \
     -e SHELLYPLUG_URL=host/ip_address \
     -e PORT=9185 \
+    -e PERIOD=60 \
     shellyplug-exporter
 ```
-
-## Limitations
-
-* the period with which the ShellyPlug is scraped is hard-coded to 1 minute

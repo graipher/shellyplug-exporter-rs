@@ -8,6 +8,7 @@ use prometheus_exporter::{
 };
 use reqwest::Client;
 use serde::Deserialize;
+use serde_json::from_str;
 
 #[derive(Debug, Deserialize)]
 struct Aenergy {
@@ -63,12 +64,14 @@ async fn get_data(client: &Client, url: &String) -> Result<ShellyplugResponse, r
 #[tokio::main]
 async fn main() {
     let port = env::var("PORT").or::<String>(Ok("9185".to_string())).unwrap();
-    println!("Listening on port :{}", port);
+    let period = Duration::from_secs(from_str::<u64>(&env::var("PERIOD").or::<String>(Ok("60".to_string())).unwrap()).unwrap());
     let binding = format!("0.0.0.0:{}", port).parse().unwrap();
+    println!("Listening on {}", binding);
+    println!("Updating every {:?}", period);
     let exporter = prometheus_exporter::start(binding).unwrap();
 
     let client = Client::new();
-    let url = format!("{}/rpc/Shelly.GetStatus", env::var("SHELLYPLUG_URL").unwrap());
+    let url = format!("{}/rpc/Shelly.GetStatus", env::var("SHELLYPLUG_URL").expect("SHELLYPLUG_URL not set"));
 
     let a_power = register_gauge_vec!("shellyplug_apower", "Instantaneous power in W", &["mac"]).unwrap();
     let voltage_shelly = register_gauge_vec!("shellyplug_voltage", "Voltage in V", &["mac"]).unwrap();
@@ -86,6 +89,7 @@ async fn main() {
     loop {
         match get_data(&client, &url).await {
             Ok(data) => {
+                // println!("{:?}", data);
                 now = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
                 let mac = data.sys.mac;
                 a_power.get_metric_with_label_values(&[&mac]).unwrap().set(data.switch0.apower);
@@ -107,6 +111,6 @@ async fn main() {
             }
             Err(err) => eprintln!("{}", err)
         }
-        let _guard = exporter.wait_duration(Duration::from_secs(60));
+        let _guard = exporter.wait_duration(period);
     }
 }
