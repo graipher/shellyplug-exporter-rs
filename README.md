@@ -12,7 +12,7 @@ Build and run with Docker:
 
 ```sh
 docker build -t shellyplug-exporter .
-docker run --it -rm \
+docker run -it --rm \
     -e SHELLYPLUG_URL=host/ip_address \
     -e PORT=9185 \
     -e PERIOD=60 \
