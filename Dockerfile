@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3-labs
 
-FROM rust:1.75.0-slim-bookworm AS builder
+FROM rust:1.76.0-slim-bookworm AS builder
 
 RUN update-ca-certificates
 ENV USER=worker
