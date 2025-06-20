@@ -1060,7 +1060,7 @@ dependencies = [
 
 [[package]]
 name = "shellyplug-exporter-rs"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "compile-time",
  "prometheus_exporter",
