@@ -41,6 +41,11 @@ struct AvailableUpdates {
 struct Sys {
     mac: String,
     available_updates: AvailableUpdates,
+    uptime: i64,
+    ram_size: i64,
+    ram_free: i64,
+    fs_size: i64,
+    fs_free: i64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -104,12 +109,22 @@ async fn main() {
         &["mac"]
     )
     .unwrap();
+    let ram_size_shelly =
+        register_gauge_vec!("shellyplug_ram_size", "RAM size in bytes", &["mac"]).unwrap();
+    let ram_free_shelly =
+        register_gauge_vec!("shellyplug_ram_free", "RAM free in bytes", &["mac"]).unwrap();
+    let fs_size_shelly =
+        register_gauge_vec!("shellyplug_fs_size", "FS size in bytes", &["mac"]).unwrap();
+    let fs_free_shelly =
+        register_gauge_vec!("shellyplug_fs_free", "FS free in bytes", &["mac"]).unwrap();
     let available_updates_shelly = register_gauge_vec!(
         "shellyplug_available_updates_info",
         "Information about available updates",
         &["mac", "version"]
     )
     .unwrap();
+    let uptime_shelly =
+        register_gauge_vec!("shellyplug_uptime", "Uptime in seconds", &["mac"]).unwrap();
     let last_updated_shelly = register_gauge_vec!(
         "shellyplug_last_updated",
         "Last update of Shellyplug",
@@ -177,6 +192,26 @@ async fn main() {
                         .unwrap()
                         .set(0.);
                 }
+                ram_size_shelly
+                    .get_metric_with_label_values(&[&mac])
+                    .unwrap()
+                    .set(data.sys.ram_size as f64);
+                ram_free_shelly
+                    .get_metric_with_label_values(&[&mac])
+                    .unwrap()
+                    .set(data.sys.ram_free as f64);
+                fs_size_shelly
+                    .get_metric_with_label_values(&[&mac])
+                    .unwrap()
+                    .set(data.sys.fs_size as f64);
+                fs_free_shelly
+                    .get_metric_with_label_values(&[&mac])
+                    .unwrap()
+                    .set(data.sys.fs_free as f64);
+                uptime_shelly
+                    .get_metric_with_label_values(&[&mac])
+                    .unwrap()
+                    .set(data.sys.uptime as f64);
                 available_updates_shelly.reset();
                 match data.sys.available_updates.stable {
                     Some(v) => available_updates_shelly
