@@ -1,17 +1,15 @@
 # syntax=docker/dockerfile:1.3-labs
 
-FROM rust:1.87.0-slim-bookworm AS builder
+FROM rust:1.89.0-slim-pixie AS builder
 
 RUN update-ca-certificates
 ENV USER=worker
 ENV UID=1001
 
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
+RUN useradd \
     --no-create-home \
+    --home-dir /nonexistent \
+    --shell /sbin/nologin \
     --uid "${UID}" \
     "${USER}"
 
