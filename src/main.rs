@@ -63,14 +63,9 @@ async fn get_data(client: &Client, url: &String) -> Result<ShellyplugResponse, r
 
 #[tokio::main]
 async fn main() {
-    let port = env::var("PORT")
-        .unwrap_or("9185".to_string());
+    let port = env::var("PORT").unwrap_or("9185".to_string());
     let period = Duration::from_secs(
-        from_str::<u64>(
-            &env::var("PERIOD")
-                .unwrap_or("60".to_string()),
-        )
-        .unwrap(),
+        from_str::<u64>(&env::var("PERIOD").unwrap_or("60".to_string())).unwrap(),
     );
     let binding = format!("0.0.0.0:{}", port).parse().unwrap();
     println!("Listening on {}", binding);
