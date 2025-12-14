@@ -1,19 +1,24 @@
 [package]
 name = "shellyplug-exporter-rs"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2024"
+authors = ["Andreas Weiden <andreas.weiden@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/graipher/shellyplug-exporter-rs"
+license = "MIT"
 
 [profile.release]
 lto = true
 codegen-units = 1
 opt-level = 3
+strip = "symbols"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.12.12", features = ["json"] }
-serde_json = "1.0.140"
-tokio = { version = "1.43.1", features = ["rt", "rt-multi-thread", "macros"] }
-serde = { version = "1.0.218", features = ["derive"] }
-prometheus_exporter = "0.8.5"
 compile-time = "0.2.0"
+prometheus_exporter = { version = "0.8.5", default-features = false }
+reqwest = { version = "0.12.12", features = ["json"] }
+serde = { version = "1.0.218", features = ["derive"], default-features = false  }
+serde_json = "1.0.140"
+tokio = { version = "1.43.1", features = ["macros", "rt-multi-thread"] }

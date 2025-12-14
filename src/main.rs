@@ -148,7 +148,8 @@ async fn main() {
     loop {
         match get_data(&client, &url).await {
             Ok(data) => {
-                // println!("{:?}", data);
+                #[cfg(debug_assertions)]
+                println!("{:?}", data);
                 now = SystemTime::now()
                     .duration_since(SystemTime::UNIX_EPOCH)
                     .unwrap()
